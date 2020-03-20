@@ -1,2 +1,3 @@
-# ci-react-app
-Ci for create react app
+# CI for Create React App
+
+Simple CI/CD with Docker, Nginx and Git hooks :)
