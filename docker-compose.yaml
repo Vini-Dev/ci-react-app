@@ -1,0 +1,12 @@
+version: "3.5"
+
+services:
+  app:
+    image: node:12.16.1
+    container_name: mycontainer
+    working_dir: /home/node/app
+    restart: always
+    volumes:
+      - ./:/home/node/app
+      - /home/node/app/node_modules
+    command: bash -c "yarn && yarn build"

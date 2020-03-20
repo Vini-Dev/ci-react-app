@@ -1,0 +1,29 @@
+#!/bin/bash
+while read oldrev newrev ref
+do
+    if [[ $ref =~ .*/master$ ]];
+    then
+        echo "Master ref received. Deploying master branch to production..."
+        git --work-tree=/var/www/myproject --git-dir=/var/repos/myrepo checkout -f
+
+        echo "Initalizing container..."
+        docker-compose -f "/var/www/myproject/docker-compose.yaml" up --build
+
+        echo "Updationg folder..."
+        docker exec mycontainer bash -c "cp -r /home/node/app/build/* /home/node/app/prod"
+
+        echo "Removing temp build..."
+        docker exec mycontainer bash -c "rm -r /home/node/app/build"
+
+        echo "Stopping container..."
+        docker-compose -f "/var/www/myproject/docker-compose.yaml" down
+
+    elif [[ $ref =~ .*/develop$ ]];
+    then
+        echo "Develop ref received. Deploying develop branch to development..."
+        git --work-tree=/var/www/myprojectdev --git-dir=/var/repos/myrepo checkout -f
+
+    else
+        echo "Ref $ref successfully received.  Doing nothing: only the master or develop branch may be deployed on this server."
+    fi
+done
